@@ -2,7 +2,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction, LogInfo
 from launch.substitutions import LaunchConfiguration
 #essential libraries for rviz
 from launch.actions import IncludeLaunchDescription
@@ -37,34 +37,41 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'package_description': package_name,
-            'rviz_config_file_name': rviz_config_file
+            'rviz_config_file_name': rviz_config_file,
+            'use_sim_time': use_sim_time
             }.items()
     )
 
     return LaunchDescription([
         # Include the launch argument in the launch description
-        package_name_arg,
-        rviz_config_file_arg,
-        start_rviz_launch,
-        
         use_sim_time_arg,
         map_file_arg,
+        package_name_arg,
+        rviz_config_file_arg,
 
-        Node(
-            package='nav2_map_server',
-            executable='map_server',
-            name='map_server',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}, 
-                        {'yaml_filename':[map_dir, map_file]} 
-                       ]),
+        start_rviz_launch,
+        LogInfo(msg='----------------------waiting for RVIZ------------------------'),
 
-        Node(
-            package='nav2_lifecycle_manager',
-            executable='lifecycle_manager',
-            name='lifecycle_manager_mapper',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time},
-                        {'autostart': True},
-                        {'node_names': ['map_server']}])            
-        ])
+        TimerAction(
+            period=5.0,
+            actions=[
+                Node(
+                    package='nav2_map_server',
+                    executable='map_server',
+                    name='map_server',
+                    output='screen',
+                    parameters=[{'use_sim_time': use_sim_time}, 
+                                {'yaml_filename':[map_dir, map_file]} 
+                               ]),
+
+                Node(
+                    package='nav2_lifecycle_manager',
+                    executable='lifecycle_manager',
+                    name='lifecycle_manager_mapper',
+                    output='screen',
+                    parameters=[{'use_sim_time': use_sim_time},
+                                {'autostart': True},
+                                {'node_names': ['map_server']}]) 
+            ]
+        )           
+    ])
