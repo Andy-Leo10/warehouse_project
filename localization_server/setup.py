@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'cartographer_slam'
+package_name = 'localization_server'
 
 setup(
     name=package_name,

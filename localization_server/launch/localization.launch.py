@@ -12,12 +12,13 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     
+    nav2_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'amcl_config.yaml')
     # Declare the launch argument
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time',default_value='True',
         description='Use simulation (Gazebo) clock if true')
     map_file_arg = DeclareLaunchArgument('map_file',default_value='warehouse_map_sim.yaml',
         description='Map file to provide')
-    package_name_arg = DeclareLaunchArgument("package_name", default_value="map_server")
+    package_name_arg = DeclareLaunchArgument("package_name", default_value="localization_server")
     rviz_config_file_arg= DeclareLaunchArgument("rviz_config_file", default_value="config1.rviz")
     # Use the launch argument in the node configuration
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -53,25 +54,34 @@ def generate_launch_description():
         LogInfo(msg='----------------------waiting for RVIZ------------------------'),
 
         TimerAction(
-            period=10.0,
+            period=5.0,
             actions=[
                 Node(
                     package='nav2_map_server',
                     executable='map_server',
                     name='map_server',
                     output='screen',
-                    parameters=[{'use_sim_time': use_sim_time}, 
-                                {'yaml_filename':[map_dir, map_file]} 
-                               ]),
+                    parameters=[{'use_sim_time': True}, 
+                                {'yaml_filename':[map_dir, map_file]}]
+                ),
+                    
+                Node(
+                    package='nav2_amcl',
+                    executable='amcl',
+                    name='amcl',
+                    output='screen',
+                    parameters=[nav2_yaml]
+                ),
 
                 Node(
                     package='nav2_lifecycle_manager',
                     executable='lifecycle_manager',
-                    name='lifecycle_manager_mapper',
+                    name='lifecycle_manager_localization',
                     output='screen',
-                    parameters=[{'use_sim_time': use_sim_time},
+                    parameters=[{'use_sim_time': True},
                                 {'autostart': True},
-                                {'node_names': ['map_server']}]) 
+                                {'node_names': ['map_server', 'amcl']}]
+                )
             ]
-        )           
+        ) 
     ])

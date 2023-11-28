@@ -1,0 +1,14 @@
+digraph G {
+"robot_odom" -> "robot_docking_station_laser_noisy"[label=" Broadcaster: default_authority\nAverage rate: 40.39\nBuffer length: 4.704\nMost recent transform: 1701202789.861133\nOldest transform: 1701202785.156999\n"];
+"robot_odom" -> "robot_docking_station_laser_noisy_0"[label=" Broadcaster: default_authority\nAverage rate: 40.39\nBuffer length: 4.704\nMost recent transform: 1701202789.861133\nOldest transform: 1701202785.156999\n"];
+"robot_odom" -> "robot_base_footprint"[label=" Broadcaster: default_authority\nAverage rate: 50.212\nBuffer length: 4.74\nMost recent transform: 1701202789.952901\nOldest transform: 1701202785.213015\n"];
+"robot_odom" -> "robot_docking_station_laser"[label=" Broadcaster: default_authority\nAverage rate: 23.617\nBuffer length: 4.7\nMost recent transform: 1701202789.92028\nOldest transform: 1701202785.22029\n"];
+"robot_base_link" -> "robot_left_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 31.786\nBuffer length: 4.719\nMost recent transform: 1701202789.952627\nOldest transform: 1701202785.233555\n"];
+"robot_base_link" -> "robot_right_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 31.786\nBuffer length: 4.719\nMost recent transform: 1701202789.952627\nOldest transform: 1701202785.233555\n"];
+"robot_elevator_base_link" -> "robot_elevator_platform_link"[label=" Broadcaster: default_authority\nAverage rate: 7.237\nBuffer length: 4.56\nMost recent transform: 1701202789.873034\nOldest transform: 1701202785.313179\n"];
+"robot_base_footprint" -> "robot_front_laser_link"[label=" Broadcaster: default_authority\nAverage rate: 1.25\nBuffer length: 4.0\nMost recent transform: 1701202790.920316\nOldest transform: 1701202786.919865\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1701202790.0259225"[ shape=plaintext ] ;
+}->"robot_elevator_base_link";
+}

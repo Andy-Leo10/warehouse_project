@@ -8,7 +8,7 @@ roslaunch rb1_base_gazebo warehouse_rb1.launch
 ```
 + Start the ROS1 bridge
 ```
-source ~/catkin_ws/devel/setup.bash
+source ~/simulation_ws/devel/setup.bash
 roslaunch load_params load_params_base.launch
 source /opt/ros/galactic/setup.bash
 ros2 run ros1_bridge parameter_bridge
@@ -18,26 +18,28 @@ ros2 run ros1_bridge parameter_bridge
 - [x] Start mapping
 ```
 ros2 launch cartographer_slam cartographer.launch.py
+rso2 launch cartographer_slam start_rviz_with_arguments.launch.py
 ros2 run nav2_map_server map_saver_cli -f NAME
 ```
 - [x] Providing map
 ```
-ros2 launch map_server map_server.launch.py map_file:=warehouse_map_sim.yaml
-ros2 launch map_server map_server.launch.py map_file:=warehouse_map_real.yaml
+ros2 launch map_server map_server.launch.py map_file:=warehouse_map_sim.yaml use_sim_time:=True
+ros2 launch map_server map_server.launch.py map_file:=warehouse_map_real.yaml use_sim_time:=False
 ```
 
 ## 2 Localization Launch files
 - [x] Start localization
 ```
-ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml
+ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml use_sim_time:=True
+ros2 launch localization_server localization.launch.py map_file:=warehouse_map_real.yaml use_sim_time:=False
 ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
 ```
 
 ## 3 Navigation Launch files
 - [x] Pre approach
+1st launch the localization, 2nd place the initial pose
 ```
-ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml
-ros2 launch path_planner_server pathplanner.launch.py
+ros2 launch path_planner_server pathplanner.launch.py use_sim_time:=False
 ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
 ```
 
