@@ -19,7 +19,7 @@ def generate_launch_description():
     map_file_arg = DeclareLaunchArgument('map_file',default_value='warehouse_map_sim.yaml',
         description='Map file to provide')
     package_name_arg = DeclareLaunchArgument("package_name", default_value="localization_server")
-    rviz_config_file_arg= DeclareLaunchArgument("rviz_config_file", default_value="config1.rviz")
+    rviz_config_file_arg= DeclareLaunchArgument("rviz_config_file", default_value="config2.rviz")
     # Use the launch argument in the node configuration
     use_sim_time = LaunchConfiguration('use_sim_time')
     map_file = LaunchConfiguration('map_file')
@@ -61,7 +61,7 @@ def generate_launch_description():
                     executable='map_server',
                     name='map_server',
                     output='screen',
-                    parameters=[{'use_sim_time': True}, 
+                    parameters=[{'use_sim_time': use_sim_time}, 
                                 {'yaml_filename':[map_dir, map_file]}]
                 ),
                     
@@ -70,7 +70,8 @@ def generate_launch_description():
                     executable='amcl',
                     name='amcl',
                     output='screen',
-                    parameters=[nav2_yaml]
+                    parameters=[nav2_yaml,
+                                {'use_sim_time': use_sim_time}]
                 ),
 
                 Node(
@@ -78,7 +79,7 @@ def generate_launch_description():
                     executable='lifecycle_manager',
                     name='lifecycle_manager_localization',
                     output='screen',
-                    parameters=[{'use_sim_time': True},
+                    parameters=[{'use_sim_time': use_sim_time},
                                 {'autostart': True},
                                 {'node_names': ['map_server', 'amcl']}]
                 )
