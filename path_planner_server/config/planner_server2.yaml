@@ -1,0 +1,47 @@
+planner_server:
+  ros__parameters:
+    expected_planner_frequency: 1.0 #lower because it is the general plan
+    use_sim_time: False
+    planner_plugins: ["GridBased"]
+    GridBased:
+      plugin: "nav2_navfn_planner/NavfnPlanner"
+      tolerance: 0.3 # Tolerance in meters between the goal pose and the end of the path
+      use_astar: false
+      allow_unknown: true
+#global costmap
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: robot_base_footprint
+      use_sim_time: False
+      #robot_radius: 0.250
+      footprint: '[ [0.140, 0.140], [0.140, -0.140], [-0.140, -0.140], [-0.140, 0.140] ]'
+      resolution: 0.02
+      track_unknown_space: true
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 6.5 #before was 3.
+        inflation_radius: 0.30 #before was 0.35
+      always_send_full_costmap: True
+

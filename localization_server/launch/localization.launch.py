@@ -9,17 +9,20 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+#conditions
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
     
-    nav2_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'amcl_config.yaml')
+    nav2_yaml_1 = os.path.join(get_package_share_directory('localization_server'), 'config', 'amcl_config.yaml')
+    nav2_yaml_2 = os.path.join(get_package_share_directory('localization_server'), 'config', 'amcl_config2.yaml')
     # Declare the launch argument
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time',default_value='True',
         description='Use simulation (Gazebo) clock if true')
     map_file_arg = DeclareLaunchArgument('map_file',default_value='warehouse_map_sim.yaml',
         description='Map file to provide')
     package_name_arg = DeclareLaunchArgument("package_name", default_value="localization_server")
-    rviz_config_file_arg= DeclareLaunchArgument("rviz_config_file", default_value="config2.rviz")
+    rviz_config_file_arg= DeclareLaunchArgument("rviz_config_file", default_value="pathplanning.rviz")
     # Use the launch argument in the node configuration
     use_sim_time = LaunchConfiguration('use_sim_time')
     map_file = LaunchConfiguration('map_file')
@@ -64,16 +67,26 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': use_sim_time}, 
                                 {'yaml_filename':[map_dir, map_file]}]
                 ),
-                    
+                #----------------------------------------------#    
                 Node(
                     package='nav2_amcl',
                     executable='amcl',
                     name='amcl',
                     output='screen',
-                    parameters=[nav2_yaml,
-                                {'use_sim_time': use_sim_time}]
+                    parameters=[nav2_yaml_1,
+                                {'use_sim_time': use_sim_time}],
+                condition=IfCondition(use_sim_time), 
                 ),
-
+                Node(
+                    package='nav2_amcl',
+                    executable='amcl',
+                    name='amcl',
+                    output='screen',
+                    parameters=[nav2_yaml_2,
+                                {'use_sim_time': use_sim_time}],
+                    condition=UnlessCondition(use_sim_time), 
+                ),
+                #----------------------------------------------#
                 Node(
                     package='nav2_lifecycle_manager',
                     executable='lifecycle_manager',
