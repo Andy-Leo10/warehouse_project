@@ -5,7 +5,7 @@ planner_server:
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.3
+      tolerance: 0.3 # Tolerance in meters between the goal pose and the end of the path
       use_astar: false
       allow_unknown: true
 #global costmap
