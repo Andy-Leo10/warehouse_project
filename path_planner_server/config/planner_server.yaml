@@ -22,7 +22,7 @@ global_costmap:
       resolution: 0.02
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      filters: ["keepout_filter", "inflation_layer"]
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
         enabled: True
@@ -47,6 +47,6 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 6.5 #before was 3.
-        inflation_radius: 0.30 #before was 0.35
+        inflation_radius: 0.45 #before was 0.35
       always_send_full_costmap: True
 
