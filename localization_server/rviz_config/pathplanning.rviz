@@ -104,8 +104,6 @@ Visualization Manager:
           Value: false
         robot_imu_link:
           Value: false
-        robot_left_wheel_link:
-          Value: true
         robot_odom:
           Value: true
         robot_omni_backwheel_link:
@@ -114,8 +112,6 @@ Visualization Manager:
           Value: false
         robot_omni_front_rightwheel_link:
           Value: false
-        robot_right_wheel_link:
-          Value: true
         robot_top_cover_link:
           Value: false
       Marker Scale: 2
@@ -144,15 +140,11 @@ Visualization Manager:
                     {}
                 robot_imu_link:
                   {}
-                robot_left_wheel_link:
-                  {}
                 robot_omni_backwheel_link:
                   {}
                 robot_omni_front_leftwheel_link:
                   {}
                 robot_omni_front_rightwheel_link:
-                  {}
-                robot_right_wheel_link:
                   {}
               robot_top_cover_link:
                 {}
@@ -204,7 +196,7 @@ Visualization Manager:
         Alpha: 1
         Axes Length: 1
         Axes Radius: 0.10000000149011612
-        Color: 255; 170; 0
+        Color: 85; 85; 127
         Head Length: 0.30000001192092896
         Head Radius: 0.15000000596046448
         Shaft Length: 0.699999988079071
@@ -352,6 +344,47 @@ Visualization Manager:
         Value: /global_costmap/costmap_updates
       Use Timestamp: false
       Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Polygon
+      Color: 72; 145; 217
+      Enabled: true
+      Name: Global footprint
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /global_costmap/published_footprint
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 64; 129; 194
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.05000000074505806
+      Name: global Path
+      Offset:
+        X: 0.009999999776482582
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /received_global_plan
+      Value: true
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
@@ -372,6 +405,47 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /local_costmap/costmap_updates
       Use Timestamp: false
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Polygon
+      Color: 226; 151; 0
+      Enabled: true
+      Name: Local footprint
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /local_costmap/published_footprint
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 223; 149; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.05000000074505806
+      Name: local Path
+      Offset:
+        X: -0.009999999776482582
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /local_plan
       Value: true
   Enabled: true
   Global Options:
@@ -419,7 +493,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 9.061088562011719
+      Distance: 9.09941291809082
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

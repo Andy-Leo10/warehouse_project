@@ -5,7 +5,7 @@ planner_server:
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.3 # Tolerance in meters between the goal pose and the end of the path
+      tolerance: 0.5 # Tolerance in meters between the goal pose and the end of the path
       use_astar: false
       allow_unknown: true
 #global costmap
@@ -18,10 +18,15 @@ global_costmap:
       robot_base_frame: robot_base_footprint
       use_sim_time: False
       #robot_radius: 0.250
-      footprint: '[ [0.140, 0.140], [0.140, -0.140], [-0.140, -0.140], [-0.140, 0.140] ]'
+      footprint: '[ [0.250, 0.250], [0.250, -0.250], [-0.250, -0.250], [-0.250, 0.250] ]'
       resolution: 0.02
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      filters: ["keepout_filter"]
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True

@@ -22,6 +22,8 @@ def generate_launch_description():
     bt_navigator_yaml_2 = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'bt_navigator2.yaml')
     planner_yaml_2 = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'planner_server2.yaml')
     recovery_yaml_2 = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'recovery2.yaml')
+    filters_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'filters.yaml')
+    filters_yaml_2 = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'filters2.yaml')
     # Declare the launch argument
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time',default_value='True',
         description='Use simulation (Gazebo) clock if true')
@@ -145,6 +147,48 @@ def generate_launch_description():
                     ),
                 #----------------------------------------------#
                 Node(
+                    package='nav2_map_server',
+                    executable='map_server',
+                    name='filter_mask_server',
+                    output='screen',
+                    emulate_tty=True,
+                    parameters=[filters_yaml,
+                                {'use_sim_time': use_sim_time}],
+                    condition=IfCondition(use_sim_time), 
+                    ),
+                Node(
+                    package='nav2_map_server',
+                    executable='map_server',
+                    name='filter_mask_server',
+                    output='screen',
+                    emulate_tty=True,
+                    parameters=[filters_yaml_2,
+                                {'use_sim_time': use_sim_time}],
+                    condition=UnlessCondition(use_sim_time),
+                    ),
+
+                Node(
+                    package='nav2_map_server',
+                    executable='costmap_filter_info_server',
+                    name='costmap_filter_info_server',
+                    output='screen',
+                    emulate_tty=True,
+                    parameters=[filters_yaml,
+                                {'use_sim_time': use_sim_time}],
+                    condition=IfCondition(use_sim_time), 
+                    ),
+                Node(
+                    package='nav2_map_server',
+                    executable='costmap_filter_info_server',
+                    name='costmap_filter_info_server',
+                    output='screen',
+                    emulate_tty=True,
+                    parameters=[filters_yaml_2,
+                                {'use_sim_time': use_sim_time}],
+                    condition=UnlessCondition(use_sim_time),
+                    ),
+                #----------------------------------------------#
+                Node(
                     package='nav2_lifecycle_manager',
                     executable='lifecycle_manager',
                     name='lifecycle_manager_pathplanner',
@@ -154,7 +198,9 @@ def generate_launch_description():
                                 {'node_names': ['planner_server',
                                                 'controller_server',
                                                 'recoveries_server',
-                                                'bt_navigator']}])
+                                                'bt_navigator',
+                                                'filter_mask_server',
+                                                'costmap_filter_info_server']}])
             ]
         )
 

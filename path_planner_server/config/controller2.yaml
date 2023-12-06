@@ -5,7 +5,7 @@ controller_server:
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
-    failure_tolerance: 0.3 # to make the robot get closer to the path
+    failure_tolerance: 0.5 # to make the robot get closer to the path
     progress_checker_plugin: "progress_checker"
     goal_checker_plugins: ["general_goal_checker"] 
     controller_plugins: ["FollowPath"]
@@ -51,9 +51,11 @@ controller_server:
       short_circuit_trajectory_evaluation: True
       stateful: True
       #robot_radius -> BaseObstacle
-      #footprint -> ObstacleFootprint      
-      critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
+      #footprint -> ObstacleFootprint
+      #lookahead_dist: 2.0      
+      #critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
       #critics: ["RotateToGoal", "Oscillation", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
+      critics: ["RotateToGoal", "Oscillation", "PathDist", "GoalDist"]
       BaseObstacle.scale: 0.02
       PathAlign.scale: 16.0 #effort to follow the path plan 32.
       PathAlign.forward_point_distance: 0.1
@@ -78,8 +80,13 @@ local_costmap:
       height: 3
       resolution: 0.02
       #robot_radius: 0.250
-      footprint: '[ [0.140, 0.140], [0.140, -0.140], [-0.140, -0.140], [-0.140, 0.140] ]'
+      footprint: '[ [0.250, 0.250], [0.250, -0.250], [-0.250, -0.250], [-0.250, 0.250] ]'
       plugins: ["voxel_layer", "inflation_layer"]
+      filters: ["keepout_filter"]
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 6.5 #before was 3.
