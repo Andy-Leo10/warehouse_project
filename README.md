@@ -39,8 +39,15 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:
 - [x] Pre approach
 1st launch the localization, 2nd place the initial pose
 ```
+ros2 launch path_planner_server pathplanner.launch.py use_sim_time:=True
 ros2 launch path_planner_server pathplanner.launch.py use_sim_time:=False
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
+```
+
+## 4 NAV2 app Launch files
+- [x] 
+```
+move_shelf_to_ship.py --use_sim_time True
+move_shelf_to_ship.py --use_sim_time False
 ```
 
 ## Others
@@ -49,4 +56,6 @@ ros2 run tf2_tools view_frames
 ```
 ```
 ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
+ros2 topic pub /elevator_up std_msgs/msg/String "{}"
+ros2 topic pub /elevator_down std_msgs/msg/String "{}"
 ```
