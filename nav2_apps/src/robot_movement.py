@@ -5,6 +5,7 @@ from std_srvs.srv import Empty as SrvEmpty
 from time import sleep, time
 from nav_msgs.msg import Odometry
 from math import atan2, pi, fabs
+from tf2_ros import TransformListener, Buffer
 
 class RobotMovement(Node):
     def __init__(self):
@@ -20,7 +21,7 @@ class RobotMovement(Node):
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.positionX = None
         self.positionY = None
-        self.angle_yaw = None
+        self.angle_yaw = 0.0
         #timer for control
         self.timer_period = 0.1  # seconds
         self.timer=self.create_timer(self.timer_period, self.timer_callback)
@@ -31,19 +32,26 @@ class RobotMovement(Node):
         self.requested_yaw_angle_desired = None
         self.requested_x_position_desired = None
         self.requested_y_position_desired = None
+        self.movement_completed = True
+        #tf2 listener
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
     
     def achieve_yaw_angle(self,yaw_angle_desired):
+        self.movement_complete = False
         #requested_yaw_angle_desired in radians!
         self.requested_yaw_angle = True
         self.requested_yaw_angle_desired = yaw_angle_desired*pi/180
         self.timer.reset()
         
     def achieve_x_position(self,x_position_desired):
+        self.movement_complete = False
         self.requested_x_position = True
         self.requested_x_position_desired = x_position_desired
         self.timer.reset()
         
     def achieve_y_position(self,y_position_desired):
+        self.movement_complete = False
         self.requested_y_position = True
         self.requested_y_position_desired = y_position_desired
         self.timer.reset()
@@ -53,20 +61,29 @@ class RobotMovement(Node):
             if self.controller_kp(self.angle_yaw, self.requested_yaw_angle_desired, 
                                   kp=1.0, tolerance=1.0*pi/180, control_type='yaw_angle'):
                 self.requested_yaw_angle = False
+                self.movement_complete = True
                 self.timer.cancel()
         elif self.requested_x_position:
             if self.controller_kp(self.positionX, self.requested_x_position_desired, 
                                   kp=1.0, tolerance=0.01, control_type='x_position'):
                 self.requested_x_position = False
+                self.movement_complete = True
                 self.timer.cancel()
         elif self.requested_y_position:
             if self.controller_kp(self.positionY, self.requested_y_position_desired, 
                                   kp=1.0, tolerance=0.01, control_type='y_position'):
                 self.requested_y_position = False
+                self.movement_complete = True
                 self.timer.cancel()
         else:
             self.timer.cancel()
-        
+    
+    def wait_for_movement_completion(self):
+        rclpy.spin_once(self)  # Process callbacks
+        while not self.movement_complete:
+            sleep(0.1)  # Sleep for a short time to avoid busy waiting
+            rclpy.spin_once(self)  # Process callbacks
+              
     def odom_callback(self, msg):
         self.positionX = msg.pose.pose.position.x
         self.positionY = msg.pose.pose.position.y
@@ -82,7 +99,7 @@ class RobotMovement(Node):
         yaw = atan2(2*(w*z + x*y), 1 - 2*(y*y + z*z))
         '''
         self.angle_yaw = atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
-        print(f'x: {self.positionX:.2f}, y: {self.positionY:.2f}, yaw: {self.angle_yaw*180/pi:.2f}')
+        #print(f'x: {self.positionX:.2f}, y: {self.positionY:.2f}, yaw: {self.angle_yaw*180/pi:.2f}')
         
         
     def reinitialize_localization(self):
@@ -174,4 +191,38 @@ class RobotMovement(Node):
             else:
                 self.get_logger().info(f"error: {error:.2f}, control_speed: {control_speed:.2f}")
             return False
-        
+    
+    def get_transform(self, reference_frame='robot_odom', target_frame='cart_frame'):
+        try:
+            # Get the transformation from reference_frame to target_frame
+            transform = self.tf_buffer.lookup_transform(reference_frame, target_frame, rclpy.time.Time())
+
+            # Extract frame IDs
+            reference_frame = transform.header.frame_id
+            target_frame = transform.child_frame_id
+
+            # Extract timestamp
+            timestamp = transform.header.stamp.sec + transform.header.stamp.nanosec * 1e-9
+
+            # Extract coordinates
+            x = transform.transform.translation.x
+            y = transform.transform.translation.y
+            z = transform.transform.translation.z
+
+            # Extract quaternions
+            qx = transform.transform.rotation.x
+            qy = transform.transform.rotation.y
+            qz = transform.transform.rotation.z
+            qw = transform.transform.rotation.w
+            yaw = atan2(2*(qw*qz + qx*qy), 1-2*(qy*qy + qz*qz))
+
+            return {
+                'reference_frame': reference_frame,
+                'target_frame': target_frame,
+                'timestamp': timestamp,
+                'coordinates': (x, y, z),
+                'yaw': yaw
+            }
+        except Exception as e:
+            self.get_logger().error(f"Failed to get transform from {reference_frame} to {target_frame}: {e}")
+            return None

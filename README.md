@@ -32,22 +32,22 @@ ros2 launch map_server map_server.launch.py map_file:=warehouse_map_real.yaml us
 ```
 ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml use_sim_time:=True
 ros2 launch localization_server localization.launch.py map_file:=warehouse_map_real.yaml use_sim_time:=False
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
 ```
 
 ## 3 Navigation Launch files
 - [x] Pre approach
-1st launch the localization, 2nd place the initial pose
+
 ```
 ros2 launch path_planner_server pathplanner.launch.py use_sim_time:=True
 ros2 launch path_planner_server pathplanner.launch.py use_sim_time:=False
 ```
 
 ## 4 NAV2 app Launch files
-- [x] 
+- [x] RB1 working on the warehouse
+
 ```
-move_shelf_to_ship.py --use_sim_time True
-move_shelf_to_ship.py --use_sim_time False
+python3 move_shelf_to_ship.py --use_sim_time True
+python3 move_shelf_to_ship.py --use_sim_time False
 ```
 
 ## Others
