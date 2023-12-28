@@ -8,7 +8,7 @@ from math import atan2, pi, fabs
 from tf2_ros import TransformListener, Buffer
 
 class RobotMovement(Node):
-    def __init__(self):
+    def __init__(self, use_sim_time=True):
         super().__init__('robot_movement_node')
         self.publisher = self.create_publisher(Twist, '/robot/cmd_vel', 10)
         self.MAX_LINEAR_SPEED = 0.2
@@ -25,13 +25,19 @@ class RobotMovement(Node):
         self.requested_yaw_angle_desired = None
         self.requested_x_position_desired = None
         self.requested_y_position_desired = None
-        self.kp = 0.75
+        self.kp = 0.5
         self.movement_completed = False
+        #frames
+        self.use_sim_time = use_sim_time
+        if self.use_sim_time:
+            self.reference_frame = 'robot_base_link'
+            self.target_frame = 'cart_frame'
+        else:   
+            self.reference_frame = 'robot_base_footprint'
+            self.target_frame = 'robot_cart_laser'
         #tf2 listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-        self.reference_frame = 'robot_base_link'
-        self.target_frame = 'cart_frame'
         self.relative_x_position = None
         self.relative_y_position = None
         self.relative_yaw_angle = None
@@ -80,21 +86,21 @@ class RobotMovement(Node):
                 
                 #control x position: minimize x distance
                 if self.pos_x_accomplished == False:
-                    if self.controller_kp(desired_var=-0.0, control_var=self.relative_x_position, kp=self.kp, tolerance=0.05, control_type='x_position'):
+                    if self.controller_kp(desired_var=-0.02, control_var=self.relative_x_position, kp=self.kp, tolerance=0.03, control_type='x_position'):
                         self.pos_x_accomplished = True
                         self.get_logger().info(">>>>>>>>> X position accomplished!")
                 #control yaw angle: minimize yaw angle
                 elif self.yaw_accomplished == False:
-                    if self.controller_kp(desired_var=-0.0, control_var=self.relative_yaw_angle, kp=self.kp*2, tolerance=2.0*pi/180, control_type='yaw_angle'):
+                    if self.controller_kp(desired_var=-0.0, control_var=self.relative_yaw_angle, kp=self.kp*2, tolerance=1.3*pi/180, control_type='yaw_angle'):
                         self.yaw_accomplished = True
                         self.get_logger().info(">>>>>>>>> Yaw angle accomplished!")
                 #control y position: minimize y distance
                 elif self.pos_y_accomplished == False:
-                    if self.controller_kp(desired_var=0.5, control_var=self.relative_x_position, kp=self.kp, tolerance=0.05, control_type='y_position'):
+                    if self.controller_kp(desired_var=0.5, control_var=self.relative_x_position, kp=self.kp, tolerance=0.03, control_type='y_position'):
                         self.pos_y_accomplished = True
                         self.get_logger().info(">>>>>>>>> Y position accomplished!")
                 elif self.extra_move_accomplished == False:
-                    self.move_forward(move_time=4)
+                    self.move_forward(move_time=3.5)
                     self.extra_move_accomplished = True
                     self.get_logger().info(">>>>>>>>> Extra move accomplished!")
                 else:
