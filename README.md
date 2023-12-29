@@ -1,5 +1,9 @@
 # warehouse_project
 
+
+https://github.com/Andy-Leo10/warehouse_project/assets/60716487/4628aa23-c77a-4e4f-ab95-7df550ce822a
+
+
 ## Mandatory
 + Start the simulation in ROS1
 ```
@@ -59,3 +63,5 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:
 ros2 topic pub /elevator_up std_msgs/msg/String "{}"
 ros2 topic pub /elevator_down std_msgs/msg/String "{}"
 ```
+
+[rosgraph.pdf](https://github.com/Andy-Leo10/warehouse_project/files/13794902/rosgraph.pdf)
