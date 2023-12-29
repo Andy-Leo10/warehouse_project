@@ -16,7 +16,7 @@ class RobotMovement(Node):
         self.ZERO_LINEAR_SPEED = 0.0
         self.ZERO_ANGULAR_SPEED = 0.0
         #timer for control
-        self.timer_period = 0.050  # seconds
+        self.timer_period = 0.025  # seconds
         self.timer=self.create_timer(self.timer_period, self.timer_callback)
         self.timer.cancel()
         self.requested_yaw_angle = False
@@ -43,7 +43,8 @@ class RobotMovement(Node):
         self.relative_yaw_angle = None
         self.pos_x_accomplished = False
         self.pos_y_accomplished = False
-        self.yaw_accomplished = False
+        self.yaw_accomplished_1 = False
+        self.yaw_accomplished_2 = False
         self.extra_move_accomplished = False
     
     def timer_callback(self):
@@ -86,21 +87,27 @@ class RobotMovement(Node):
                 
                 #control x position: minimize x distance
                 if self.pos_x_accomplished == False:
-                    if self.controller_kp(desired_var=-0.02, control_var=self.relative_x_position, kp=self.kp, tolerance=0.03, control_type='x_position'):
+                    if self.controller_kp(desired_var=-0.02, control_var=self.relative_x_position, kp=self.kp, tolerance=0.01, control_type='x_position'):
                         self.pos_x_accomplished = True
                         self.get_logger().info(">>>>>>>>> X position accomplished!")
-                #control yaw angle: minimize yaw angle
-                elif self.yaw_accomplished == False:
-                    if self.controller_kp(desired_var=-0.0, control_var=self.relative_yaw_angle, kp=self.kp*2, tolerance=1.3*pi/180, control_type='yaw_angle'):
-                        self.yaw_accomplished = True
+                #control yaw angle 1: minimize yaw angle
+                elif self.yaw_accomplished_1 == False:
+                    if self.controller_kp(desired_var=0.0*pi/180, control_var=self.relative_yaw_angle, kp=self.kp*2, tolerance=1.0*pi/180, control_type='yaw_angle'):
+                        self.yaw_accomplished_1 = True
                         self.get_logger().info(">>>>>>>>> Yaw angle accomplished!")
                 #control y position: minimize y distance
                 elif self.pos_y_accomplished == False:
-                    if self.controller_kp(desired_var=0.5, control_var=self.relative_x_position, kp=self.kp, tolerance=0.03, control_type='y_position'):
+                    if self.controller_kp(desired_var=0.55, control_var=self.relative_x_position, kp=self.kp, tolerance=0.01, control_type='y_position'):
                         self.pos_y_accomplished = True
                         self.get_logger().info(">>>>>>>>> Y position accomplished!")
+                #control yaw angle 1: minimize yaw angle
+                elif self.yaw_accomplished_2 == False:
+                    if self.controller_kp(desired_var=0.0*pi/180, control_var=self.relative_yaw_angle, kp=self.kp*2, tolerance=1.0*pi/180, control_type='yaw_angle'):
+                        self.yaw_accomplished_2 = True
+                        self.get_logger().info(">>>>>>>>> Yaw angle accomplished!")
+                #do extra move
                 elif self.extra_move_accomplished == False:
-                    self.move_forward(move_time=3.5)
+                    self.move_forward(move_time=3.7)
                     self.extra_move_accomplished = True
                     self.get_logger().info(">>>>>>>>> Extra move accomplished!")
                 else:
@@ -120,7 +127,7 @@ class RobotMovement(Node):
         while not self.movement_completed:
             if time() - start_time > timeout:
                 raise TimeoutError("Movement did not complete within the specified timeout")
-            sleep(0.05)  # Sleep for a short time to match the timer period
+            sleep(0.025)  # Sleep for a short time to match the timer period
             rclpy.spin_once(self)  # Process callbacks
             
     def controller_kp(self, control_var, desired_var, kp, tolerance, control_type='yaw_angle'):

@@ -62,7 +62,8 @@ if __name__ == '__main__':
         robot_elevator.publish_up()
         robot_footprint.update_footprint_cart()
         robot_movement.move_backward(move_time=6)
-        robot_movement.spin(spin_time=9, turn_factor=-1)
+        robot_movement.spin(spin_time=8, turn_factor=-1)
+        robot_movement.move_forward(move_time=1.7)
         # step2
         api.go_to(*middle_position)
         api.go_to(*shipping_position)
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         robot_movement.move_backward(move_time=6)
         # step3
         api.go_to(*init_position)
-
+        
 '''
 python3 ros2_ws/src/warehouse_project/nav2_apps/src/move_shelf_to_ship.py --use_sim_time False
 '''
