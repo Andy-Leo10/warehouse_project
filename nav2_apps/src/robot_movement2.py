@@ -87,7 +87,7 @@ class RobotMovement(Node):
                 
                 #control x position: minimize x distance
                 if self.pos_x_accomplished == False:
-                    if self.controller_kp(desired_var=-0.02, control_var=self.relative_x_position, kp=self.kp, tolerance=0.01, control_type='x_position'):
+                    if self.controller_kp(desired_var=0.05, control_var=self.relative_x_position, kp=self.kp, tolerance=0.01, control_type='x_position'):
                         self.pos_x_accomplished = True
                         self.get_logger().info(">>>>>>>>> X position accomplished!")
                 #control yaw angle 1: minimize yaw angle

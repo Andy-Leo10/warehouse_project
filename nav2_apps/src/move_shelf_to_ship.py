@@ -23,7 +23,7 @@ if __name__ == '__main__':
         shipping_position = (0.742, -3.852, -0.801, 'shipping position')
         init_position = (-2.363, -1.845, 0.783, 'initial position')
     else:
-        loading_position = (3.538,-0.934,-0.123, 'loading position')
+        loading_position = (3.495,-1.390,-0.180, 'loading position')#try#3.495,-1.390,-0.180    #og#3.538,-0.934,-0.123
         middle_position = (0.981,-0.262,-1.897, 'middle position')
         shipping_position = (0.233,-2.867,-1.790, 'shipping position')
         init_position = (-0.145,-0.031,-0.123, 'initial position')
@@ -32,9 +32,11 @@ if __name__ == '__main__':
     
     if use_sim_time:
         print('>>> IMPROVING LOCALIZATION')
-        robot_movement.spin(spin_time=30, turn_factor=-1)
+        #robot_movement.spin(spin_time=30, turn_factor=-1)
         # step1
         api.go_to(*loading_position)
+        api.lifecycle_localization_deactivate_node()
+        api.lifecycle_pathplanner_deactivate_node()
         print('>>> EXECUTING TRANSFORM ... AND GOING TO THE CART')
         robot_movement.enable_control()
         robot_movement.wait_for_movement_completion()
@@ -43,6 +45,9 @@ if __name__ == '__main__':
         robot_movement.move_backward(move_time=8)
         robot_movement.spin(spin_time=11, turn_factor=-1)
         robot_movement.move_forward(move_time=2)
+        api.lifecycle_localization_activate_node()
+        api.lifecycle_pathplanner_activate_node()
+        sleep(8)
         # step2
         api.go_to(*middle_position)
         api.go_to(*shipping_position)
